@@ -1,0 +1,1284 @@
+<title>Simulado MEI, ME e EPP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&display=swap">
+<style>
+:root{
+  --bg:#EDF0F5; --surface:#FFFFFF; --surface-2:#F5F7FA; --surface-3:#EAEEF4;
+  --ink:#141E2C; --ink-soft:#495A70; --ink-faint:#78879B;
+  --line:#DBE1EA; --line-strong:#C3CDDA;
+  --brand:#1F3A5F; --brand-deep:#152A46; --brand-text:#24456F; --brand-bright:#3D6595;
+  --clay:#A8492A; --clay-bright:#C25E3B;
+  --ok:#14724F; --ok-bg:#E3F1EA; --ok-line:#A8D5BF;
+  --no:#A93524; --no-bg:#FBE8E4; --no-line:#EFC0B5;
+  --onbrand:#EAF0F8;
+  --shadow:0 1px 2px rgba(20,30,44,.05), 0 10px 26px -16px rgba(20,30,44,.25);
+  --shadow-lift:0 2px 4px rgba(20,30,44,.06), 0 18px 40px -22px rgba(20,30,44,.4);
+  --r:13px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0A111B; --surface:#131E2B; --surface-2:#0F1926; --surface-3:#1A2837;
+    --ink:#E6ECF4; --ink-soft:#A3B2C6; --ink-faint:#74869D;
+    --line:#22303F; --line-strong:#2E4054;
+    --brand:#1F3A5F; --brand-deep:#0F1E33; --brand-text:#8FB6E0; --brand-bright:#4F81BC;
+    --clay:#E08A63; --clay-bright:#EE9C74;
+    --ok:#46C08D; --ok-bg:#0E2A21; --ok-line:#1D4636;
+    --no:#F08872; --no-bg:#2E1611; --no-line:#4F2A22;
+    --onbrand:#E6EEF8;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 12px 30px -18px rgba(0,0,0,.8);
+    --shadow-lift:0 2px 6px rgba(0,0,0,.4), 0 20px 46px -24px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0A111B; --surface:#131E2B; --surface-2:#0F1926; --surface-3:#1A2837;
+  --ink:#E6ECF4; --ink-soft:#A3B2C6; --ink-faint:#74869D;
+  --line:#22303F; --line-strong:#2E4054;
+  --brand:#1F3A5F; --brand-deep:#0F1E33; --brand-text:#8FB6E0; --brand-bright:#4F81BC;
+  --clay:#E08A63; --clay-bright:#EE9C74;
+  --ok:#46C08D; --ok-bg:#0E2A21; --ok-line:#1D4636;
+  --no:#F08872; --no-bg:#2E1611; --no-line:#4F2A22;
+  --onbrand:#E6EEF8;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 12px 30px -18px rgba(0,0,0,.8);
+  --shadow-lift:0 2px 6px rgba(0,0,0,.4), 0 20px 46px -24px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:660px; margin:0 auto; padding-inline:16px; padding-block:0 24px}
+#screenIntro, #screenDone{padding-bottom:56px}
+.tnum{font-variant-numeric:tabular-nums}
+h1,h2,h3{margin:0; font-family:"Newsreader",Georgia,"Times New Roman",serif; font-weight:600; text-wrap:balance; letter-spacing:-.005em}
+p{margin:0}
+:focus-visible{outline:2.5px solid var(--brand-bright); outline-offset:2px; border-radius:6px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+
+/* ---------- barra superior ---------- */
+.topbar{position:sticky; top:env(safe-area-inset-top,0px); z-index:30; background:var(--brand-deep); color:var(--onbrand)}
+.topbar .inner{max-width:660px; margin:0 auto; padding:9px 16px; display:flex; align-items:center; gap:10px}
+.brandmark{display:flex; align-items:center; gap:9px; min-width:0}
+.brandmark .sigil{
+  width:27px; height:27px; border-radius:8px; flex:none; display:grid; place-items:center;
+  background:var(--clay-bright); color:#22110A; font-weight:700; font-size:12px; letter-spacing:.3px;
+  font-family:"Newsreader",Georgia,serif;
+}
+.brandmark .txt{min-width:0}
+.brandmark b{display:block; font-size:13.5px; font-weight:600; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.brandmark span{display:block; font-size:10px; letter-spacing:.9px; text-transform:uppercase; opacity:.62; line-height:1.4}
+.grow{flex:1}
+.counter{font-size:12.5px; opacity:.8; white-space:nowrap}
+.iconbtn{
+  appearance:none; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.07);
+  color:var(--onbrand); width:38px; height:38px; border-radius:10px; cursor:pointer; flex:none;
+  -webkit-tap-highlight-color:transparent;
+  display:grid; place-items:center; font-size:14px; transition:background .15s;
+}
+.iconbtn:hover{background:rgba(255,255,255,.17)}
+.rail{height:3px; background:rgba(255,255,255,.14)}
+.rail i{display:block; height:100%; width:0; background:var(--clay-bright); transition:width .3s ease}
+
+/* ---------- comuns ---------- */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow)}
+.eyebrow{font-size:10.5px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--clay)}
+.btn{
+  appearance:none; cursor:pointer; font:inherit; font-weight:600; border-radius:11px;
+  padding:15px 22px; min-height:52px; border:1px solid transparent;
+  transition:background .15s, border-color .15s, transform .06s;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--brand); color:#fff}
+.btn-primary:hover{background:var(--brand-bright)}
+.btn-ghost{background:var(--surface); color:var(--ink); border-color:var(--line-strong)}
+.btn-ghost:hover{border-color:var(--brand-bright); color:var(--brand-text)}
+.btn[disabled]{opacity:.4; cursor:not-allowed}
+.btn-wide{width:100%}
+
+/* ---------- abertura ---------- */
+.hero{padding-top:30px}
+.hero .tag{display:inline-block; padding:4px 10px; border-radius:999px; background:var(--surface-3); color:var(--brand-text); font-size:11.5px; font-weight:600; letter-spacing:.4px}
+.hero h1{font-size:clamp(30px,8.5vw,42px); line-height:1.06; margin-top:14px}
+.hero h1 em{font-style:normal; color:var(--clay)}
+.hero .lead{color:var(--ink-soft); margin-top:14px; font-size:16.5px; max-width:52ch}
+
+.scope{margin-top:24px; padding:18px; display:grid; gap:16px}
+@media(min-width:520px){.scope{grid-template-columns:1fr 1fr}}
+.scope h3{font-family:"Archivo",sans-serif; font-size:11px; font-weight:700; letter-spacing:1.3px; text-transform:uppercase; display:flex; align-items:center; gap:7px}
+.scope h3 .dot{width:8px;height:8px;border-radius:50%;flex:none}
+.scope .in h3{color:var(--ok)} .scope .in .dot{background:var(--ok)}
+.scope .out h3{color:var(--ink-faint)} .scope .out .dot{background:var(--ink-faint)}
+.scope ul{margin:9px 0 0; padding:0; list-style:none; display:grid; gap:5px}
+.scope li{font-size:14px; color:var(--ink-soft); display:flex; gap:8px; line-height:1.4}
+.scope li b{color:var(--ink); font-weight:600}
+.scope .out li{opacity:.75; text-decoration:line-through; text-decoration-color:var(--line-strong)}
+.scope .when{font-size:11.5px; color:var(--ink-faint); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+.setup{margin-top:16px; padding:16px 18px}
+.setup h2{font-family:"Archivo",sans-serif; font-size:11px; font-weight:700; letter-spacing:1.3px; text-transform:uppercase; color:var(--ink-faint)}
+.optrow{display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line)}
+.optrow:last-of-type{border-bottom:none; padding-bottom:4px}
+.optrow .txt{flex:1; min-width:0}
+.optrow .txt b{display:block; font-size:14.5px; font-weight:600}
+.optrow .txt span{display:block; font-size:12.5px; color:var(--ink-faint); line-height:1.4}
+.switch{position:relative; width:46px; height:27px; flex:none}
+.switch input{position:absolute; inset:0; opacity:0; width:100%; height:100%; margin:0; cursor:pointer}
+.switch i{position:absolute; inset:0; border-radius:999px; background:var(--line-strong); transition:background .18s; pointer-events:none}
+.switch i::after{content:""; position:absolute; top:3px; left:3px; width:21px; height:21px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.28); transition:transform .18s}
+.switch input:checked + i{background:var(--brand-bright)}
+.switch input:checked + i::after{transform:translateX(19px)}
+.switch input:focus-visible + i{outline:2.5px solid var(--brand-bright); outline-offset:2px}
+
+.startbar{margin-top:18px; display:grid; gap:10px}
+.resume{padding:13px 16px; border-radius:11px; background:var(--surface-3); border:1px solid var(--line); font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+.resume .grow{min-width:0}
+.linkbtn{appearance:none; background:none; border:none; font:inherit; font-size:13.5px; font-weight:600; color:var(--brand-text); cursor:pointer; padding:4px 2px; text-decoration:underline; text-underline-offset:3px}
+.linkbtn:hover{color:var(--clay)}
+.fineprint{margin-top:20px; font-size:12.5px; color:var(--ink-faint); line-height:1.5}
+
+/* ---------- questão ---------- */
+.qhead{display:flex; align-items:baseline; gap:10px; margin-top:22px; flex-wrap:wrap}
+.qnum{font-family:"Newsreader",Georgia,serif; font-size:30px; font-weight:700; color:var(--clay); line-height:1}
+.qmeta{font-size:11px; font-weight:600; letter-spacing:.8px; text-transform:uppercase; color:var(--ink-faint)}
+.qcard{margin-top:12px; padding:18px}
+.stem{font-size:16.5px; line-height:1.56}
+.stem strong{font-weight:700; color:var(--clay); letter-spacing:.2px}
+.items{margin:13px 0 0; padding:13px 0 0; border-top:1px solid var(--line); display:grid; gap:7px}
+.items div{font-size:15px; color:var(--ink-soft); display:flex; gap:9px; line-height:1.48}
+.items div b{color:var(--ink); font-weight:600; flex:none; min-width:20px}
+.tail{margin-top:13px; font-size:16px; line-height:1.5}
+
+.alts{margin-top:14px; display:grid; gap:9px}
+.alt{
+  display:flex; gap:12px; align-items:flex-start; width:100%; text-align:left;
+  background:var(--surface); border:1.5px solid var(--line); border-radius:11px;
+  padding:15px 14px; min-height:58px; cursor:pointer; font:inherit; color:var(--ink);
+  transition:border-color .14s, background .14s;
+  -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none;
+}
+@media (hover:hover){.alt:hover:not(:disabled){border-color:var(--brand-bright); background:var(--surface-2)}}
+.alt:active:not(:disabled){border-color:var(--brand-bright); background:var(--surface-3)}
+.alt:disabled{cursor:default}
+.alt .key{
+  flex:none; width:28px; height:28px; border-radius:7px; display:grid; place-items:center;
+  background:var(--surface-3); color:var(--ink-soft); font-size:12.5px; font-weight:700;
+  border:1px solid var(--line); transition:background .14s, color .14s, border-color .14s;
+}
+.alt .body{flex:1; min-width:0; font-size:15.5px; line-height:1.45; padding-top:1px}
+.alt.picked-ok{border-color:var(--ok-line); background:var(--ok-bg)}
+.alt.picked-ok .key{background:var(--ok); color:#fff; border-color:var(--ok)}
+.alt.picked-no{border-color:var(--no-line); background:var(--no-bg)}
+.alt.picked-no .key{background:var(--no); color:#fff; border-color:var(--no)}
+.alt.reveal-ok{border-color:var(--ok-line); background:var(--ok-bg)}
+.alt.reveal-ok .key{background:var(--ok); color:#fff; border-color:var(--ok)}
+.alt.dim{opacity:.5}
+
+.verdict{margin-top:14px; scroll-margin-top:72px; scroll-margin-bottom:96px; border-radius:12px; border:1px solid var(--line); overflow:hidden; animation:rise .22s ease-out}
+@keyframes rise{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+.verdict .top{padding:11px 15px; display:flex; align-items:center; gap:9px; font-size:13.5px; font-weight:700; letter-spacing:.3px}
+.verdict.good .top{background:var(--ok-bg); color:var(--ok); border-bottom:1px solid var(--ok-line)}
+.verdict.bad .top{background:var(--no-bg); color:var(--no); border-bottom:1px solid var(--no-line)}
+.verdict.good{border-color:var(--ok-line)} .verdict.bad{border-color:var(--no-line)}
+.verdict .sheet{background:var(--surface); padding:15px}
+.verdict .block + .block{margin-top:13px; padding-top:13px; border-top:1px solid var(--line)}
+.verdict .lbl{font-size:10.5px; font-weight:700; letter-spacing:1.3px; text-transform:uppercase; color:var(--ink-faint); margin-bottom:5px}
+.verdict .lbl.hit{color:var(--ok)} .verdict .lbl.miss{color:var(--no)}
+.verdict p{font-size:15px; line-height:1.55; color:var(--ink)}
+.verdict p + p{margin-top:8px}
+.verdict b{font-weight:700}
+.verdict .quiet{color:var(--ink-soft); font-size:14.5px}
+
+.navrow{
+  position:sticky; bottom:0; z-index:20; margin-top:18px;
+  display:flex; gap:10px; align-items:center;
+  padding-top:12px; padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  background:linear-gradient(to top, var(--bg) 0%, var(--bg) 66%, transparent 100%);
+}
+.navrow .btn{flex:1}
+
+/* ---------- resultado ---------- */
+.score{margin-top:26px; padding:24px 20px; text-align:center}
+.score .big{font-family:"Newsreader",Georgia,serif; font-size:64px; font-weight:700; line-height:1; letter-spacing:-.02em}
+.score .of{font-size:15px; color:var(--ink-faint); margin-top:6px}
+.score .verdictline{margin-top:14px; font-size:15.5px; color:var(--ink-soft); max-width:40ch; margin-inline:auto; line-height:1.5}
+.pct{display:inline-block; margin-top:14px; padding:5px 14px; border-radius:999px; font-size:13px; font-weight:700; letter-spacing:.3px}
+.pct.hi{background:var(--ok-bg); color:var(--ok)} .pct.mid{background:var(--surface-3); color:var(--brand-text)} .pct.lo{background:var(--no-bg); color:var(--no)}
+
+.scoretitle{font-size:22px; margin-top:16px; line-height:1.15}
+.streak{padding:9px 15px; background:var(--surface-3); color:var(--brand-text); font-size:13px; font-weight:600; border-bottom:1px solid var(--line)}
+
+/* ---------- leve isso na cabeça ---------- */
+.levar{margin-top:16px; padding:18px; border-left:3px solid var(--clay)}
+.levarhead{display:flex; align-items:flex-start; gap:12px; justify-content:space-between; flex-wrap:wrap}
+.levarhead h2{font-size:21px; margin-top:3px}
+.lvintro{margin-top:13px; font-size:15px; color:var(--ink-soft); line-height:1.5}
+.lvintro b{color:var(--ink)}
+.zerobug{margin-top:13px; font-size:15px; color:var(--ink-soft); line-height:1.5}
+.lvgroup{margin-top:16px}
+.lvtema{font-size:11px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--clay); display:flex; align-items:center; gap:8px}
+.lvtema span{background:var(--no-bg); color:var(--no); border-radius:999px; padding:1px 7px; font-size:10.5px; letter-spacing:0}
+.lvlist{margin:8px 0 0; padding:0; list-style:none; display:grid; gap:8px}
+.lvlist li{font-size:15px; line-height:1.5; padding:10px 13px; background:var(--surface-2); border:1px solid var(--line); border-radius:9px}
+
+.bytopic{margin-top:16px; padding:18px}
+.bytopic h2{font-family:"Archivo",sans-serif; font-size:11px; font-weight:700; letter-spacing:1.3px; text-transform:uppercase; color:var(--ink-faint); margin-bottom:14px}
+.tprow{display:grid; grid-template-columns:1fr auto; gap:4px 12px; align-items:center; padding:9px 0; border-top:1px solid var(--line)}
+.tprow:first-of-type{border-top:none; padding-top:0}
+.tprow .nm{font-size:14.5px; font-weight:600}
+.tprow .sc{font-size:13px; color:var(--ink-faint); font-variant-numeric:tabular-nums; white-space:nowrap}
+.tprow .bar{grid-column:1/-1; height:6px; border-radius:99px; background:var(--surface-3); overflow:hidden}
+.tprow .bar i{display:block; height:100%; border-radius:99px; background:var(--brand-bright)}
+.tprow .bar i.full{background:var(--ok)}
+.tprow .bar i.weak{background:var(--no)}
+
+.recap{margin-top:16px}
+.recap h2{font-family:"Archivo",sans-serif; font-size:11px; font-weight:700; letter-spacing:1.3px; text-transform:uppercase; color:var(--ink-faint); margin:0 2px 10px}
+details.rq{border:1px solid var(--line); border-radius:11px; background:var(--surface); margin-bottom:8px; overflow:hidden}
+details.rq[open]{box-shadow:var(--shadow)}
+details.rq summary{list-style:none; cursor:pointer; padding:13px 15px; display:flex; gap:11px; align-items:flex-start}
+details.rq summary::-webkit-details-marker{display:none}
+details.rq .flag{flex:none; width:23px; height:23px; border-radius:7px; display:grid; place-items:center; font-size:12px; font-weight:700; color:#fff}
+details.rq .flag.ok{background:var(--ok)} details.rq .flag.no{background:var(--no)} details.rq .flag.skip{background:var(--ink-faint)}
+details.rq .sum{flex:1; min-width:0}
+details.rq .sum .t{font-size:14.5px; line-height:1.4; font-weight:500}
+details.rq .sum .m{font-size:11px; letter-spacing:.7px; text-transform:uppercase; color:var(--ink-faint); margin-top:3px}
+details.rq .inner{padding:0 15px 15px; border-top:1px solid var(--line); margin-top:2px; padding-top:13px}
+details.rq .ans{font-size:14.5px; line-height:1.5}
+details.rq .ans + .ans{margin-top:7px}
+details.rq .ans .kk{display:inline-grid; place-items:center; width:20px; height:20px; border-radius:6px; font-size:11px; font-weight:700; color:#fff; margin-right:7px; vertical-align:-4px}
+details.rq .ans .kk.ok{background:var(--ok)} details.rq .ans .kk.no{background:var(--no)}
+details.rq .why{margin-top:11px; padding-top:11px; border-top:1px solid var(--line); font-size:14.5px; color:var(--ink-soft); line-height:1.55}
+details.rq .why b{color:var(--ink)}
+
+.cheat{margin-top:18px; padding:18px; border-left:3px solid var(--clay)}
+.cheat h2{font-size:19px; margin-bottom:4px}
+.cheat .sub{font-size:13.5px; color:var(--ink-faint)}
+.cheat dl{margin:14px 0 0; display:grid; gap:11px}
+.cheat dt{font-size:13px; font-weight:700; color:var(--clay); letter-spacing:.2px}
+.cheat dd{margin:2px 0 0; font-size:14.5px; color:var(--ink-soft); line-height:1.5}
+.cheat dd b{color:var(--ink); font-weight:600}
+
+.endbar{margin-top:18px; display:grid; gap:9px}
+@media(min-width:520px){.endbar{grid-template-columns:1fr 1fr}}
+
+/* ---------- ajustes de celular ---------- */
+@media (max-width:430px){
+  .hero{padding-top:20px}
+  .hero h1{font-size:clamp(27px,8vw,34px)}
+  .hero .lead{font-size:15.5px}
+  .qhead{margin-top:15px; gap:9px}
+  .qnum{font-size:26px}
+  .qcard{padding:15px}
+  .stem{font-size:16px}
+  .alt{padding:14px 13px}
+  .alt .body{font-size:15.5px}
+  .items div{font-size:14.5px}
+  .score{padding:20px 16px}
+  .score .big{font-size:54px}
+  .scoretitle{font-size:20px}
+  .levar,.bytopic,.cheat,.setup,.scope{padding:16px}
+  .lvlist li{font-size:14.5px}
+  .brandmark b{font-size:13px}
+}
+html{-webkit-text-size-adjust:100%}
+body{overflow-x:hidden; overscroll-behavior-y:contain}
+</style>
+
+<div class="topbar">
+  <div class="inner">
+    <div class="brandmark">
+      <div class="sigil" style="width:34px;font-size:11px;letter-spacing:0">PME</div>
+      <div class="txt">
+        <b>Simulado · Tópicos em PME</b>
+        <span id="subtitle">MEI, ME, EPP e regimes</span>
+      </div>
+    </div>
+    <div class="grow"></div>
+    <div class="counter tnum" id="counter" hidden></div>
+    <button class="iconbtn" id="themeBtn" type="button" aria-label="Alternar tema claro e escuro">◐</button>
+  </div>
+  <div class="rail"><i id="rail"></i></div>
+</div>
+
+<div class="wrap">
+
+  <!-- ====== ABERTURA ====== -->
+  <section id="screenIntro">
+    <div class="hero">
+      <span class="tag">Gestão Comercial · 4º período</span>
+      <h1>Trinta questões sobre <em>MEI, ME e EPP</em></h1>
+      <p class="lead">Feito só em cima dos 25 slides da aula, do enquadramento dos portes ao cálculo do Lucro Presumido. Cada questão diz de qual slide saiu. Sem tapinha nas costas: as alternativas erradas foram escritas pra enganar mesmo.</p>
+    </div>
+
+    <div class="card scope">
+      <div class="in">
+        <h3><span class="dot"></span>O que cai aqui</h3>
+        <ul>
+          <li><b>Enquadramento MEI, ME e EPP</b><span class="grow"></span><span class="when">6 q.</span></li>
+          <li><b>Vantagens e tratamento diferenciado</b><span class="grow"></span><span class="when">6 q.</span></li>
+          <li><b>Simples Nacional</b><span class="grow"></span><span class="when">6 q.</span></li>
+          <li><b>Anexos do Simples</b><span class="grow"></span><span class="when">4 q.</span></li>
+          <li><b>Lucro Presumido × outros</b><span class="grow"></span><span class="when">4 q.</span></li>
+          <li><b>Cálculo do Presumido</b><span class="grow"></span><span class="when">4 q.</span></li>
+        </ul>
+      </div>
+      <div class="out">
+        <h3><span class="dot"></span>Vale saber</h3>
+        <ul>
+          <li>Valores e faixas seguem os slides</li>
+          <li>Tem conta: leve calculadora</li>
+          <li>Cada questão mostra o slide de origem</li>
+        </ul>
+        <p class="fineprint" style="margin-top:10px">Se a lei atual e o slide discordarem, vale o slide — é ele que o professor vai cobrar.</p>
+      </div>
+    </div>
+
+    <div class="card setup">
+      <h2>Antes de começar</h2>
+      <div class="optrow">
+        <div class="txt">
+          <b>Embaralhar</b>
+          <span>Muda a ordem das questões e das alternativas. Decorar posição não vai te salvar.</span>
+        </div>
+        <label class="switch"><input type="checkbox" id="optShuffle" checked><i></i></label>
+      </div>
+      <div class="optrow">
+        <div class="txt">
+          <b>Correção na hora</b>
+          <span>Mostra a explicação assim que você marca. Desligue para sofrer igual na prova.</span>
+        </div>
+        <label class="switch"><input type="checkbox" id="optInstant" checked><i></i></label>
+      </div>
+    </div>
+
+    <div class="startbar">
+      <div class="resume" id="resumeBox" hidden>
+        <div class="grow" id="resumeTxt"></div>
+        <button class="linkbtn" id="resumeBtn" type="button">Continuar</button>
+      </div>
+      <button class="btn btn-primary btn-wide" id="startBtn" type="button">Bora. 30 questões.</button>
+    </div>
+
+    <p class="fineprint">As questões são originais, com casos práticos, contas, V ou F e asserção-razão. Toda alternativa tem comentário próprio — inclusive as erradas. No fim sai um relatório com o que você precisa levar na cabeça.</p>
+  </section>
+
+  <!-- ====== QUESTÃO ====== -->
+  <section id="screenQuiz" hidden>
+    <div class="qhead">
+      <span class="qnum tnum" id="qNum">01</span>
+      <span class="qmeta" id="qMeta"></span>
+    </div>
+    <div class="card qcard">
+      <div class="stem" id="qStem"></div>
+      <div class="items" id="qItems" hidden></div>
+      <p class="tail" id="qTail" hidden></p>
+    </div>
+    <div class="alts" id="qAlts"></div>
+    <div id="qVerdict"></div>
+    <div class="navrow" id="qNav">
+      <button class="btn btn-ghost" id="backBtn" type="button" style="flex:none;padding-inline:16px">Voltar</button>
+      <button class="btn btn-primary" id="nextBtn" type="button" disabled>Próxima</button>
+    </div>
+  </section>
+
+  <!-- ====== RESULTADO ====== -->
+  <section id="screenDone" hidden>
+    <div class="card score">
+      <span class="eyebrow">Resultado</span>
+      <div class="big tnum" id="scoreBig">0</div>
+      <div class="of">de 30 questões</div>
+      <div><span class="pct tnum" id="scorePct">0%</span></div>
+      <h2 class="scoretitle" id="scoreTitle"></h2>
+      <p class="verdictline" id="scoreLine"></p>
+    </div>
+
+    <div class="card levar">
+      <div class="levarhead">
+        <div>
+          <span class="eyebrow">Não esqueça na hora</span>
+          <h2>Leve isso na cabeça</h2>
+        </div>
+        <button class="linkbtn" id="copyBtn" type="button" hidden>Copiar lembretes</button>
+      </div>
+      <div id="levarBox"></div>
+    </div>
+
+    <div class="card bytopic">
+      <h2>Como você foi em cada tema</h2>
+      <div id="topicList"></div>
+    </div>
+
+    <div class="recap">
+      <h2>Gabarito comentado</h2>
+      <div id="recapList"></div>
+    </div>
+
+    <div class="card cheat">
+      <h2>Resumão relâmpago</h2>
+      <p class="sub">O que não coube nas 30 questões mas pode aparecer.</p>
+      <dl>
+        <dt>Adicional do IRPJ</dt>
+        <dd>15% sobre o lucro presumido <b>+ 10% do que passar de R$ 60 mil</b>. O slide 18 fala em R$ 60 mil <b>no trimestre</b>; o slide 20 escreve "por mês". Se cair, confira com o professor — a regra da Receita é R$ 20 mil/mês = R$ 60 mil/trimestre.</dd>
+        <dt>Alíquotas médias (slide 17)</dt>
+        <dd>Presumido ≈ <b>16,33%</b> · Simples de <b>4% a 33%</b> · Real de <b>20% a 35%</b>. Apuração: Simples todo mês; Presumido e Real, mensal ou trimestral.</dd>
+        <dt>Presumido: ICMS e ISS</dt>
+        <dd>ICMS de <b>7% a 18%</b> (varia por estado e produto); ISS de <b>0,5% a 5%</b> (varia por município). Presunção de lucro vai de <b>1,6% a 32%</b>.</dd>
+        <dt>Lei</dt>
+        <dd>Estatuto das ME e EPP = <b>Lei Complementar 123/2006</b>.</dd>
+      </dl>
+    </div>
+
+    <div class="endbar">
+      <button class="btn btn-ghost" id="redoWrongBtn" type="button">Refazer só as que errei</button>
+      <button class="btn btn-primary" id="redoAllBtn" type="button">Refazer tudo</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   BANCO DE QUESTÕES
+   correta = letra na ordem canônica abaixo (antes de embaralhar)
+   ============================================================ */
+const BANCO = [
+{
+  id:1, tema:"Enquadramento MEI, ME e EPP", aula:"MEI", unidade:"Slide 2",
+  stem:'Joana faz bolos por encomenda, fatura cerca de <b>R$ 70 mil por ano</b> e tem <b>uma ajudante registrada</b>. Ela quer se formalizar pagando o mínimo de burocracia. Pelas características apresentadas em aula, o enquadramento adequado é:',
+  alts:[
+    {t:"Microempresa (ME), porque a partir do primeiro empregado registrado a empresa deixa de poder ser MEI.", w:"O MEI admite justamente 1 empregado. Contratar a ajudante não tira Joana do MEI."},
+    {t:"Microempreendedor Individual (MEI), que admite até R$ 81 mil e 1 empregado.", w:""},
+    {t:"Empresa de Pequeno Porte (EPP), porque ela vende produto fabricado por ela mesma.", w:"EPP começa acima de R$ 360 mil de faturamento. O tipo de atividade não empurra ninguém para EPP."},
+    {t:"Pessoa física autônoma, já que o MEI não possui CNPJ e não é considerado pessoa jurídica.", w:"O slide é direto: por ser MEI, possui CNPJ (Pessoa Jurídica)."},
+    {t:"Microempresa (ME), porque o limite de faturamento do MEI é de R$ 36 mil por ano.", w:"O limite do MEI no slide é R$ 81.000,00 — R$ 70 mil cabe com folga."}
+  ],
+  correta:1,
+  why:'Slide 2 — <b>MEI</b>: faturamento máximo de <b>R$ 81.000,00</b>; <b>1 empregado</b>; Simples Nacional com <b>taxa fixa e guia única</b>; e <b>tem CNPJ</b> (é pessoa jurídica). Joana fatura R$ 70 mil e tem uma ajudante: cabe exatamente no MEI.'
+},
+{
+  id:2, tema:"Enquadramento MEI, ME e EPP", aula:"limites", unidade:"Slides 2–4",
+  stem:'Classifique as afirmativas sobre MEI, ME e EPP em V (verdadeira) ou F (falsa), conforme os slides.',
+  items:[
+    ["( )","O MEI tem faturamento máximo de R$ 81.000,00 por ano."],
+    ["( )","A ME tem faturamento máximo de R$ 360.000,00 por ano."],
+    ["( )","A EPP fatura entre R$ 360.000,00 e R$ 4.800.000,00 por ano."],
+    ["( )","O MEI pode escolher entre Simples Nacional, Lucro Presumido e Lucro Real."],
+    ["( )","Uma EPP de comércio ou serviços tem de 10 a 49 empregados."]
+  ],
+  tail:"A sequência correta, de cima para baixo, é:",
+  alts:[
+    {t:"V – V – F – F – V", w:"A 3ª está certa: a faixa da EPP vai de R$ 360 mil a R$ 4,8 milhões."},
+    {t:"V – F – V – F – V", w:"A 2ª está certa: R$ 360 mil é o teto da ME."},
+    {t:"V – V – V – V – V", w:"A 4ª é falsa: o MEI fica no Simples Nacional com taxa fixa. A escolha entre Simples, Presumido e Real é da ME e da EPP."},
+    {t:"V – V – V – F – V", w:""},
+    {t:"F – V – V – F – F", w:"Erra a 1ª (R$ 81 mil é o teto do MEI) e a 5ª (10 a 49 é a faixa da EPP em comércio e serviços)."}
+  ],
+  correta:3,
+  why:'MEI até <b>R$ 81 mil</b> (V). ME até <b>R$ 360 mil</b> (V). EPP de <b>R$ 360 mil a R$ 4,8 milhões</b> (V). O MEI <b>não escolhe regime</b>: é Simples Nacional com taxa fixa e guia única (F). EPP: <b>comércio/serviços 10 a 49</b> empregados; <b>indústria/construção 20 a 99</b> (V).'
+},
+{
+  id:3, tema:"Enquadramento MEI, ME e EPP", aula:"forma empresária", unidade:"Slide 3",
+  stem:'Um <b>dentista</b> recém-formado quer abrir uma Microempresa usando a forma de <b>Empresário Individual</b>, porque achou a mais simples. Segundo o slide sobre a forma empresária da ME, ele:',
+  alts:[
+    {t:"não poderá usar essa forma, que não atende profissão liberal.", w:""},
+    {t:"poderá usá-la, porque odontologia é prestação de serviços e o Empresário Individual é permitido para atividade industrial, comercial ou de prestação de serviços.", w:"É a pegadinha: o slide diz que o Empresário Individual não atende profissão liberal (médico, dentista, engenheiro)."},
+    {t:"poderá usá-la, desde que o faturamento anual não passe de R$ 81 mil.", w:"R$ 81 mil é o limite do MEI. A restrição aqui é da atividade, não do faturamento."},
+    {t:"não poderá abrir ME de forma alguma, e terá de se registrar obrigatoriamente como MEI.", w:"Ele pode abrir ME — só não pela forma de Empresário Individual. Sociedade Simples ou SLU resolvem."},
+    {t:"poderá usá-la, desde que opte pelo regime do Lucro Real em vez do Simples Nacional.", w:"Regime tributário não muda a regra da forma empresária."}
+  ],
+  correta:0,
+  why:'Slide 3: a ME pode ser <b>Sociedade Simples</b>, <b>Sociedade Limitada Unipessoal</b> ou <b>Empresário Individual</b> — este último <b>só para atividade industrial, comercial ou prestação de serviços, e não atende profissão liberal</b> (médico, dentista, engenheiro etc.). O dentista precisa de outra forma, como a SLU.'
+},
+{
+  id:4, tema:"Enquadramento MEI, ME e EPP", aula:"SLU", unidade:"Slide 4",
+  stem:'Sobre a <b>Sociedade Limitada Unipessoal (SLU)</b>, é correto afirmar, conforme os slides, que ela:',
+  alts:[
+    {t:"exige pelo menos dois sócios e capital social mínimo de 100 salários mínimos.", w:"Unipessoal = um sócio só. E a exigência dos 100 salários mínimos é justamente o que ela eliminou."},
+    {t:"é exclusiva do MEI e não pode ser usada por ME ou EPP.", w:"O slide lista a SLU como forma empresária da ME e da EPP."},
+    {t:"é a única forma permitida para profissionais liberais que faturam acima de R$ 4,8 milhões.", w:"Acima de R$ 4,8 milhões a empresa nem é mais EPP. O slide não diz isso."},
+    {t:"substituiu o Empresário Individual e passou a ser obrigatória para indústria e comércio.", w:"Ela substituiu a EIRELI, não o Empresário Individual — que continua existindo."},
+    {t:"substitui a EIRELI e não exige capital social mínimo de 100 salários mínimos.", w:""}
+  ],
+  correta:4,
+  why:'Slide 4 — <b>SLU</b>: <b>substitui a EIRELI</b> e <b>não põe a condição de capital social mínimo de 100 salários mínimos</b>, que a EIRELI exigia. É uma das formas possíveis da ME e da EPP.'
+},
+{
+  id:5, tema:"Enquadramento MEI, ME e EPP", aula:"diferenças", unidade:"Slides 3–4",
+  stem:'Ao comparar os três portes, os slides fecham cada bloco com uma frase sobre <b>o que os diferencia</b>. Qual alternativa reproduz corretamente essa comparação?',
+  alts:[
+    {t:"A ME difere do MEI apenas pelo regime tributário; a EPP difere da ME apenas pela forma empresária.", w:"Regime e forma não são os critérios citados. Os slides falam de faturamento, empregados e formalização."},
+    {t:"A ME difere do MEI pelo número de sócios; a EPP difere da ME pela exigência de capital mínimo.", w:"Nenhum dos dois critérios aparece nas frases de comparação."},
+    {t:"ME × MEI: faturamento, empregados e formalização. EPP × ME: faturamento e empregados.", w:""},
+    {t:"A ME difere do MEI pelo faturamento; a EPP difere da ME pelo faturamento, empregados e formalização.", w:"Inverteu: a formalização é o que separa o MEI da ME. Entre ME e EPP ficam só faturamento e empregados."},
+    {t:"Os três portes diferem apenas pelo faturamento, já que o número de empregados é livre.", w:"O número de empregados é critério nos três slides (1; 9 a 19; 10 a 49 ou 20 a 99)."}
+  ],
+  correta:2,
+  why:'Slide 3: a ME <b>difere do MEI pelo faturamento, número de empregados e formalização</b>. Slide 4: a EPP <b>difere da ME pelo faturamento e número de empregados</b>. A formalização só entra na primeira comparação.'
+},
+{
+  id:6, tema:"Enquadramento MEI, ME e EPP", aula:"empregados", unidade:"Slide 4",
+  stem:'Uma <b>indústria</b> de embalagens fatura <b>R$ 2 milhões por ano</b> e tem <b>60 empregados</b>. Conforme os critérios dos slides, ela se enquadra como:',
+  alts:[
+    {t:"Microempresa, porque o faturamento está abaixo de R$ 4,8 milhões.", w:"R$ 4,8 milhões é o teto da EPP. O teto da ME é R$ 360 mil — e ela passou disso."},
+    {t:"média empresa, porque passou do limite de 49 empregados que os slides fixam para a EPP em qualquer atividade.", w:"49 é o teto de comércio e serviços. Na indústria, a EPP vai até 99 empregados."},
+    {t:"Empresa de Pequeno Porte, pelo faturamento e pela faixa industrial de 20 a 99 empregados.", w:""},
+    {t:"Microempreendedor Individual, porque a atividade é industrial.", w:"MEI tem teto de R$ 81 mil e 1 empregado."},
+    {t:"Microempresa, porque na indústria a ME admite até 99 empregados.", w:"A ME vai de 9 a 19 empregados. 20 a 99 é a faixa da EPP industrial."}
+  ],
+  correta:2,
+  why:'Slide 4 — EPP: faturamento entre <b>R$ 360 mil e R$ 4,8 milhões</b>; empregados: <b>comércio/serviços 10 a 49</b>, <b>indústria/construção 20 a 99</b>. R$ 2 milhões e 60 empregados numa indústria = <b>EPP</b>.'
+},
+{
+  id:7, tema:"Vantagens e tratamento diferenciado", aula:"vantagens da EPP", unidade:"Slide 5",
+  stem:'Todas as alternativas abaixo aparecem nos slides como <b>vantagens de ser enquadrado como EPP</b>, <strong>EXCETO</strong>:',
+  alts:[
+    {t:"isenção total de todos os tributos federais, independentemente da atividade ou da região.", w:""},
+    {t:"possibilidade de adotar o Simples Nacional.", w:"Está no slide: é a vantagem nº 1."},
+    {t:"vantagens em processos de licitação do governo federal, estadual ou municipal.", w:"Está no slide: vantagem nº 3."},
+    {t:"acesso a linhas de crédito especiais e programas de incentivo da Caixa, do Sebrae e do BNDES.", w:"Está no slide: vantagem nº 4."},
+    {t:"menos burocracia, já que a legislação oferece algumas simplificações.", w:"Está no slide: vantagem nº 5."}
+  ],
+  correta:0,
+  why:'Slide 5 lista: (1) <b>Simples Nacional</b>; (2) <b>incentivos fiscais</b> — redução ou isenção <b>em determinadas atividades ou regiões</b>; (3) <b>licitações</b>; (4) <b>crédito especial</b> (Caixa, Sebrae, BNDES); (5) <b>menos burocracia</b>. A isenção existe, mas é pontual — nunca "total, de todos os tributos".'
+},
+{
+  id:8, tema:"Vantagens e tratamento diferenciado", aula:"licitações", unidade:"Slide 14",
+  stem:'Uma prefeitura vai comprar <b>R$ 60 mil</b> em material de escritório. De acordo com o tratamento diferenciado aos pequenos negócios nas licitações, a administração pública deverá:',
+  alts:[
+    {t:"abrir a licitação para qualquer empresa e dar desconto de 25% no preço das MPE.", w:"Não existe desconto de 25% no preço. Os 25% são cota em bens divisíveis."},
+    {t:"escolher a proposta mais barata, sem nenhum tratamento diferente para as MPE.", w:"Contraria o slide inteiro: a lei manda favorecer os pequenos negócios."},
+    {t:"exigir a certidão de regularidade fiscal de todos os participantes já na abertura do certame.", w:"É o contrário: a regularidade fiscal só é exigida no ato da contratação."},
+    {t:"contratar diretamente uma MPE, sem licitação, por ser valor abaixo de R$ 80 mil.", w:"O slide não fala em dispensar licitação. Fala em licitação EXCLUSIVA para pequenos negócios."},
+    {t:"realizar licitação exclusiva para os pequenos negócios.", w:""}
+  ],
+  correta:4,
+  why:'Slide 14: a administração pública deverá <b>realizar licitações exclusivas para os pequenos negócios nas compras com valor até R$ 80 mil</b>. R$ 60 mil está dentro do limite.'
+},
+{
+  id:9, tema:"Vantagens e tratamento diferenciado", aula:"licitações", unidade:"Slide 14",
+  stem:'Um estado vai comprar <b>10 mil cadeiras escolares</b> (bem de natureza divisível) numa licitação de grande valor. Conforme o slide, ele deverá estabelecer:',
+  alts:[
+    {t:"cota de até 50% das cadeiras para contratação de MPE.", w:"O percentual do slide é 25%, não 50%."},
+    {t:"cota de até 25% das cadeiras para contratação de MPE.", w:""},
+    {t:"licitação exclusiva para MPE, independentemente do valor.", w:"A exclusividade vale só para compras de até R$ 80 mil."},
+    {t:"obrigação de que 100% dos fornecedores sejam MEI.", w:"Não existe essa regra."},
+    {t:"cota de até 25% apenas quando a compra for de serviços, nunca de bens.", w:"A cota é justamente para aquisição de BENS de natureza divisível."}
+  ],
+  correta:1,
+  why:'Slide 14: em certames para <b>aquisição de bens de natureza divisível</b>, a administração deve estabelecer <b>cota de até 25%</b> para a contratação de MPE. Divisível = dá para repartir o lote (cadeiras, resmas, uniformes).'
+},
+{
+  id:10, tema:"Vantagens e tratamento diferenciado", aula:"licitações", unidade:"Slide 14",
+  stem:'Uma ME apresentou a melhor proposta numa licitação, mas tem uma <b>pendência na certidão de regularidade fiscal</b>. Segundo o tratamento diferenciado, é correto afirmar que:',
+  alts:[
+    {t:"a ME deve ser eliminada logo na abertura, porque a certidão de regularidade fiscal é exigida de todos os licitantes antes das propostas.", w:"Para MPE a certidão só é cobrada no ato da contratação."},
+    {t:"a pendência fiscal é irrelevante e nunca precisará ser resolvida.", w:"Ela precisa ser resolvida — a lei só dá mais prazo."},
+    {t:"a ME perde automaticamente para a segunda colocada, se esta for uma grande empresa.", w:"Não há essa regra; a MPE ainda tem preferência em caso de empate."},
+    {t:"a regularidade fiscal só é exigida na contratação, com prazo extra para sanar.", w:""},
+    {t:"a ME pode ser contratada, mas terá de pagar multa de 25% do valor do contrato.", w:"Não existe essa multa. 25% é a cota em bens divisíveis."}
+  ],
+  correta:3,
+  why:'Slide 14: exigir a comprovação da <b>regularidade fiscal (CRF) apenas no ato da contratação</b>, considerando <b>prazo adicional para sanar restrições</b>. O slide também garante <b>preferência em caso de empate</b> e a possibilidade de exigir <b>subcontratação de MPE</b>.'
+},
+{
+  id:11, tema:"Vantagens e tratamento diferenciado", aula:"fiscalização orientadora", unidade:"Slide 15",
+  stem:'Na primeira visita a uma padaria enquadrada como ME, um fiscal da vigilância sanitária encontra irregularidades e <b>aplica multa na hora</b>, sem orientar nem voltar depois. Pela Lei Complementar 123/2006, essa multa:',
+  alts:[
+    {t:"é válida, porque a fiscalização sanitária, ao contrário da trabalhista e da ambiental, não está entre os aspectos da fiscalização orientadora.", w:"O aspecto sanitário está expressamente na lista do slide."},
+    {t:"é válida, porque a fiscalização orientadora só vale para o MEI, não para ME e EPP.", w:"O título do slide já diz: fiscalização orientadora para MEI, ME e EPP."},
+    {t:"é válida, desde que o fiscal volte depois para uma segunda visita de cobrança.", w:"A dupla visita é para orientar antes de punir, não para cobrar depois."},
+    {t:"poderá ser anulada, pois a fiscalização deveria ser orientadora, pelo critério da dupla visita.", w:""},
+    {t:"só poderá ser anulada se a padaria provar que fatura menos de R$ 81 mil.", w:"A regra vale para MEI, ME e EPP, sem esse corte de faturamento."}
+  ],
+  correta:3,
+  why:'Slide 15: a fiscalização (trabalhista, metrológica, <b>sanitária</b>, ambiental, de segurança e de uso do solo) de MEI, ME e EPP deve ser <b>prioritariamente orientadora</b> — educativa e não punitiva — pelo critério da <b>dupla visita</b>. <b>Multas lançadas sem observância disso poderão ser anuladas.</b>'
+},
+{
+  id:12, tema:"Vantagens e tratamento diferenciado", aula:"fiscalização orientadora", unidade:"Slide 15",
+  stem:'O slide lista os aspectos em que a fiscalização de MEI, ME e EPP deve ser prioritariamente orientadora. Qual dos aspectos abaixo <strong>NÃO</strong> aparece nessa lista?',
+  alts:[
+    {t:"Trabalhista.", w:"Está na lista."},
+    {t:"Metrológico.", w:"Está na lista (pesos e medidas)."},
+    {t:"Ambiental.", w:"Está na lista."},
+    {t:"Uso e ocupação do solo.", w:"Está na lista."},
+    {t:"Tributário.", w:""}
+  ],
+  correta:4,
+  why:'Slide 15 — aspectos: <b>trabalhista, metrológico, sanitário, ambiental, de segurança e de uso e ocupação do solo</b>. "Tributário" não está entre eles. Dica: guarde a sigla <b>TMSASU</b>.'
+},
+{
+  id:13, tema:"Simples Nacional", aula:"DAS", unidade:"Slides 6–7",
+  stem:'No Simples Nacional, os oito tributos da ME e da EPP são pagos em uma só guia, chamada:',
+  alts:[
+    {t:"DARF — Documento de Arrecadação de Receitas Federais.", w:"DARF é a guia do Lucro Presumido, emitida para cada tributo separado (slide 23)."},
+    {t:"DAS — Documento de Arrecadação do Simples Nacional.", w:""},
+    {t:"GPS — Guia da Previdência Social.", w:"Não aparece nos slides. A CPP vai dentro do DAS."},
+    {t:"DAE — Documento de Arrecadação Estadual.", w:"O ICMS também vai dentro do DAS."},
+    {t:"Nota fiscal eletrônica de serviços.", w:"Nota fiscal não é guia de pagamento."}
+  ],
+  correta:1,
+  why:'Slides 6 e 7: os 8 tributos são pagos em <b>1 só guia, o DAS (Documento de Arrecadação do Simples Nacional)</b>. Não confunda com o <b>DARF</b>, que aparece no Lucro Presumido, um para cada tributo.'
+},
+{
+  id:14, tema:"Simples Nacional", aula:"8 tributos", unidade:"Slides 6 e 13",
+  stem:'Qual dos tributos abaixo <strong>NÃO</strong> faz parte dos oito recolhidos no Simples Nacional pela ME e pela EPP?',
+  alts:[
+    {t:"IPTU — Imposto Predial e Territorial Urbano.", w:""},
+    {t:"IRPJ — Imposto de Renda de Pessoa Jurídica.", w:"É o nº 1 da lista."},
+    {t:"CSLL — Contribuição Social sobre o Lucro Líquido.", w:"É o nº 2 da lista."},
+    {t:"ICMS — Imposto sobre a Circulação de Mercadorias e Serviços.", w:"É o nº 6 da lista."},
+    {t:"CPP — Contribuição Patronal Previdenciária.", w:"É o nº 8 da lista."}
+  ],
+  correta:0,
+  why:'Os 8 do Simples: <b>IRPJ, CSLL, PIS, Cofins, IPI, ICMS, ISS e CPP</b>. IPTU é imposto sobre o imóvel e fica fora. Truque: 4 federais sobre renda/faturamento (IRPJ, CSLL, PIS, Cofins) + IPI + ICMS (estado) + ISS (município) + CPP (INSS).'
+},
+{
+  id:15, tema:"Simples Nacional", aula:"condicionantes", unidade:"Slide 7",
+  stem:'Pelas condicionantes do Simples Nacional, qual das empresas abaixo <b>pode</b> optar por ele?',
+  alts:[
+    {t:"Uma sociedade anônima (S/A) de capital fechado que fatura R$ 3 milhões por ano.", w:"Condicionante: não pode ser sociedade por ações (S/A)."},
+    {t:"Uma limitada com um dos sócios morando em Portugal.", w:"Condicionante: não pode ter sócios que vivem no exterior."},
+    {t:"Uma limitada de dois sócios residentes no Brasil, sem débitos, faturando R$ 1,2 milhão.", w:""},
+    {t:"Uma limitada que fatura R$ 900 mil, mas tem débito em aberto com a prefeitura.", w:"Condicionante: não pode ter débitos em aberto com órgãos federais, estaduais e municipais."},
+    {t:"Uma limitada que fatura R$ 2 milhões, está com os tributos em dia e tem como sócio majoritário outra empresa.", w:"Condicionante: não pode ter empresas em seu quadro societário."}
+  ],
+  correta:2,
+  why:'Slide 7 — a empresa <b>não pode</b>: ser S/A; ter sócio no exterior; ter empresas no quadro societário; ter débitos em aberto (federal, estadual ou municipal); ser sócia de outra empresa. E o faturamento tem de estar até <b>R$ 4,8 milhões</b>. Só a alternativa C passa em tudo.'
+},
+{
+  id:16, tema:"Simples Nacional", aula:"condicionantes", unidade:"Slide 7",
+  stem:'Carlos é sócio da empresa A, que fatura <b>R$ 2,5 milhões</b> por ano e quer entrar no Simples Nacional. Ele também é sócio da empresa B, que fatura <b>R$ 3 milhões</b> por ano. Conforme o slide, a empresa A:',
+  alts:[
+    {t:"não pode optar, porque a soma dos faturamentos passa de R$ 4,8 milhões.", w:""},
+    {t:"pode optar, porque cada empresa, analisada sozinha, fatura menos que o limite de R$ 4,8 milhões da EPP.", w:"É a pegadinha: quando o sócio participa de outras empresas, conta a SOMA."},
+    {t:"pode optar, desde que a empresa B também opte pelo Simples.", w:"A opção de B não muda a soma do faturamento."},
+    {t:"não pode optar, porque ninguém com duas empresas pode estar no Simples.", w:"Pode, desde que a soma do faturamento fique dentro do limite da EPP."},
+    {t:"pode optar como MEI, já que o limite do MEI é separado do das outras empresas.", w:"Com R$ 2,5 milhões, A está muito acima do limite do MEI (R$ 81 mil)."}
+  ],
+  correta:0,
+  why:'Slide 7: caso os sócios tenham participação em outras empresas, <b>a soma do faturamento de todas não pode ultrapassar o limite da EPP (R$ 4,8 milhões)</b>. R$ 2,5 mi + R$ 3 mi = R$ 5,5 mi → fora.'
+},
+{
+  id:17, tema:"Simples Nacional", aula:"impostos do MEI", unidade:"Slide 13",
+  stem:'Segundo o Sebrae (citado no slide), um MEI que presta <b>apenas serviços</b> recolhe, mensalmente, no Simples Nacional:',
+  alts:[
+    {t:"11% do salário mínimo ao INSS, mais R$ 1,00 de ICMS ao estado.", w:"A CPP do MEI é 5%, não 11%. E o ICMS é de quem vende mercadoria, não de quem só presta serviço."},
+    {t:"5% do faturamento ao INSS, mais R$ 5,00 de ISS à prefeitura.", w:"A CPP é 5% do SALÁRIO MÍNIMO, não do faturamento."},
+    {t:"5% do salário mínimo ao INSS, mais R$ 5,00 de ISS à prefeitura.", w:""},
+    {t:"5% do salário mínimo de CPP ao INSS, mais R$ 1,00 fixo de ISS à prefeitura.", w:"Trocou os valores: R$ 1,00 é o ICMS (estado); o ISS (prefeitura) é R$ 5,00."},
+    {t:"os oito tributos do Simples, calculados pela alíquota da primeira faixa do Anexo III, sobre o faturamento.", w:"O MEI paga valores fixos, não pela tabela dos anexos."}
+  ],
+  correta:2,
+  why:'Slide 13 — MEI: <b>CPP = 5% do salário mínimo</b> (INSS); <b>ICMS = R$ 1,00 fixo</b> (estado, para quem vende mercadoria); <b>ISS = R$ 5,00 fixos</b> (prefeitura, para prestação de serviços). Só serviço = CPP + ISS.'
+},
+{
+  id:18, tema:"Simples Nacional", aula:"características", unidade:"Slide 7",
+  stem:'Analise as afirmativas sobre o Simples Nacional:<br><br><b>I.</b> É um sistema unificado de arrecadação, fiscalização e cobrança criado em 2006.<br><b>II.</b> Sua base de cálculo é o lucro líquido anual da empresa.<br><b>III.</b> É optativo para empresas que faturam no máximo R$ 4,8 milhões, o que inclui MEI, ME e EPP.<br><b>IV.</b> Sua carga tributária é menor que a dos demais regimes e é recolhida numa só guia.',
+  tail:"Está correto o que se afirma em:",
+  alts:[
+    {t:"I e II, apenas.", w:"A II é falsa: a base é a receita bruta, não o lucro."},
+    {t:"II e III, apenas.", w:"A II é falsa, e ficaram de fora a I e a IV, que estão no slide."},
+    {t:"I, II, III e IV.", w:"A II é falsa."},
+    {t:"I, III e IV, apenas.", w:""},
+    {t:"III e IV, apenas.", w:"A I também está certa: sistema unificado criado em 2006."}
+  ],
+  correta:3,
+  why:'Slide 7: criado em <b>2006</b> (I-V); a base de cálculo é a <b>receita bruta anual</b> (II-F); optativo até <b>R$ 4,8 milhões</b> (III-V); carga <b>menor</b>, recolhida numa só guia, o <b>DAS</b> (IV-V). Lucro como base é coisa do Lucro Presumido/Real.'
+},
+{
+  id:19, tema:"Anexos do Simples", aula:"Anexo I", unidade:"Slide 8",
+  stem:'Uma loja de roupas (comércio) teve <b>receita bruta anual de R$ 250.000,00</b>. Pela tabela do <b>Anexo I</b>, a alíquota e o valor a descontar da faixa dela são:',
+  alts:[
+    {t:"4% e R$ 0,00.", w:"Essa é a primeira faixa, que vai só até R$ 180 mil."},
+    {t:"9,5% e R$ 13.860,00.", w:"Essa faixa começa em R$ 360 mil."},
+    {t:"7,8% e R$ 5.940,00.", w:"7,8% é a segunda faixa do Anexo II (indústria), não do comércio."},
+    {t:"11,2% e R$ 9.360,00.", w:"Essa é a segunda faixa do Anexo III (serviços de instalação e manutenção)."},
+    {t:"7,3% e R$ 5.940,00.", w:""}
+  ],
+  correta:4,
+  why:'Anexo I (comércio): até R$ 180 mil → 4%; <b>de R$ 180.000,01 a R$ 360.000 → 7,3%, descontando R$ 5.940</b>; de R$ 360 mil a R$ 720 mil → 9,5% (R$ 13.860). R$ 250 mil cai na segunda faixa.'
+},
+{
+  id:20, tema:"Anexos do Simples", aula:"qual anexo", unidade:"Slides 8–12",
+  stem:'Relacione cada empresa ao anexo do Simples Nacional indicado nos slides: uma <b>agência de publicidade</b>, uma <b>oficina de manutenção de ar-condicionado</b> e uma <b>empresa de vigilância</b>. A associação correta é:',
+  alts:[
+    {t:"Publicidade – Anexo III; manutenção – Anexo V; vigilância – Anexo IV.", w:"Trocou publicidade e manutenção. Instalação, reparo e manutenção são o Anexo III."},
+    {t:"Publicidade – V; manutenção – III; vigilância – IV.", w:""},
+    {t:"Publicidade – Anexo V; manutenção – Anexo IV; vigilância – Anexo III.", w:"Trocou manutenção e vigilância. Limpeza, vigilância e obras são o Anexo IV."},
+    {t:"Publicidade – Anexo I; manutenção – Anexo II; vigilância – Anexo IV.", w:"Anexo I é comércio e Anexo II é indústria."},
+    {t:"As três ficam no Anexo III, porque todas são prestadoras de serviço.", w:"Os serviços se dividem em três anexos (III, IV e V)."}
+  ],
+  correta:1,
+  why:'<b>I</b> comércio · <b>II</b> indústria/fábricas · <b>III</b> instalação, reparos e manutenção · <b>IV</b> limpeza, vigilância, obras, construção, advocacia · <b>V</b> auditoria, jornalismo, tecnologia, <b>publicidade</b>, engenharia.'
+},
+{
+  id:21, tema:"Anexos do Simples", aula:"Anexo II", unidade:"Slide 9",
+  stem:'Uma pequena fábrica de móveis teve <b>receita bruta anual de R$ 500.000,00</b>. Pela tabela do <b>Anexo II</b>, a alíquota e o valor a descontar da faixa dela são:',
+  alts:[
+    {t:"9,5% e R$ 13.860,00.", w:"9,5% é a faixa equivalente do Anexo I (comércio)."},
+    {t:"7,8% e R$ 5.940,00.", w:"Essa faixa vai só até R$ 360 mil."},
+    {t:"13,5% e R$ 17.640,00.", w:"Essa é a faixa do Anexo III (serviços)."},
+    {t:"11,2% e R$ 22.500,00.", w:"Essa faixa começa em R$ 720 mil."},
+    {t:"10% e R$ 13.860,00.", w:""}
+  ],
+  correta:4,
+  why:'Anexo II (indústria): até R$ 180 mil → 4,5%; até R$ 360 mil → 7,8% (R$ 5.940); <b>de R$ 360.000,01 a R$ 720.000 → 10%, descontando R$ 13.860</b>. Repare que o valor a descontar das três primeiras faixas é igual ao do Anexo I; só a alíquota muda.'
+},
+{
+  id:22, tema:"Anexos do Simples", aula:"comparação", unidade:"Slides 8–12 e 17",
+  stem:'Comparando a <b>primeira faixa</b> (até R$ 180 mil) de todos os anexos, qual deles começa com a alíquota mais alta?',
+  alts:[
+    {t:"Anexo I, com 4%.", w:"4% é justamente a menor alíquota inicial."},
+    {t:"Anexo III, com 6%.", w:"6% é alto, mas não o mais alto."},
+    {t:"Anexo IV, com 4,5%.", w:"Mesma alíquota inicial do Anexo II."},
+    {t:"Anexo V.", w:""},
+    {t:"Anexo II, com 30%.", w:"30% é a ÚLTIMA faixa do Anexo II. A primeira é 4,5%."}
+  ],
+  correta:3,
+  why:'Primeiras faixas: I = 4% · II = 4,5% · III = 6% · IV = 4,5% · <b>V = 15,5%</b>. É por isso que o slide 17 diz que no Simples a alíquota <b>varia de 4% a 33%</b>, conforme o faturamento e o anexo.'
+},
+{
+  id:23, tema:"Lucro Presumido × outros regimes", aula:"limites de faturamento", unidade:"Slide 17",
+  stem:'Uma distribuidora fatura <b>R$ 30 milhões por ano</b>. Pelo quadro comparativo dos slides, ela:',
+  alts:[
+    {t:"pode optar pelo Simples Nacional, pelo Lucro Presumido ou pelo Lucro Real.", w:"O Simples vai só até R$ 4,8 milhões."},
+    {t:"é obrigada ao Lucro Real, porque passou de R$ 4,8 milhões.", w:"Acima de R$ 4,8 milhões ela sai do Simples, mas o Presumido vai até R$ 78 milhões."},
+    {t:"pode escolher Lucro Presumido ou Lucro Real.", w:""},
+    {t:"só pode optar pelo Simples Nacional, porque é empresa de comércio.", w:"O faturamento dela passou, e muito, do teto do Simples."},
+    {t:"é obrigada ao Lucro Presumido, porque fatura menos de R$ 78 milhões.", w:"O Presumido é opção, não obrigação. O Lucro Real continua possível."}
+  ],
+  correta:2,
+  why:'Slide 17 — faturamento: <b>Simples até R$ 4,8 mi</b>; <b>Presumido até R$ 78 mi</b>; <b>Real acima de R$ 78 mi</b> (obrigatório). R$ 30 mi: fora do Simples, livre para escolher Presumido ou Real.'
+},
+{
+  id:24, tema:"Lucro Presumido × outros regimes", aula:"características", unidade:"Slide 16",
+  stem:'Avalie as asserções e a relação entre elas:<br><br><b>I.</b> No Lucro Presumido, o recolhimento é individualizado: cada tributo é calculado e pago separadamente.<br><br><b>PORQUE</b><br><br><b>II.</b> No Lucro Presumido, o IRPJ e a CSLL incidem sobre uma margem de lucro pré-definida pela Receita Federal, que pode não refletir o resultado real da empresa.',
+  alts:[
+    {t:"As asserções I e II são verdadeiras, e a II é uma justificativa correta da I.", w:"As duas são verdadeiras, mas uma não explica a outra: pagar em guias separadas não decorre de o lucro ser presumido."},
+    {t:"As asserções I e II são verdadeiras, mas a II não é uma justificativa da I.", w:""},
+    {t:"A asserção I é verdadeira, e a II é falsa.", w:"A II está no slide: a Receita adota uma margem de lucro pré-definida."},
+    {t:"A asserção I é falsa, e a II é verdadeira.", w:"A I está no slide: no Presumido cada tributo tem seu próprio documento (DARF)."},
+    {t:"As asserções I e II são falsas.", w:"As duas saem quase literalmente do slide 16."}
+  ],
+  correta:1,
+  why:'Slide 16 traz as duas como <b>características independentes</b>: (1) recolhimento <b>individualizado</b>, diferente da guia única do Simples; (2) IRPJ e CSLL sobre a <b>presunção do lucro</b>. São dois diferenciais, não causa e efeito.'
+},
+{
+  id:25, tema:"Lucro Presumido × outros regimes", aula:"apuração", unidade:"Slide 18",
+  stem:'No regime de Lucro Presumido, quais tributos são apurados <b>mensalmente</b> e quais são apurados <b>trimestralmente</b>?',
+  alts:[
+    {t:"Mensais: PIS, Cofins, ICMS, ISS. Trimestrais: IRPJ, CSLL.", w:""},
+    {t:"Mensais: IRPJ e CSLL. Trimestrais: PIS, Cofins, ICMS e ISS.", w:"Invertido."},
+    {t:"Todos são apurados mensalmente e pagos juntos numa única guia, como no DAS.", w:"Guia única e apuração mensal é o Simples Nacional."},
+    {t:"Mensais: PIS e IRPJ. Trimestrais: Cofins e CSLL.", w:"Misturou. O que é sobre faturamento é mensal; o que é sobre lucro presumido é trimestral."},
+    {t:"Todos são apurados trimestralmente.", w:"PIS, Cofins, ICMS e ISS são mensais."}
+  ],
+  correta:0,
+  why:'Slide 18: <b>mensais — PIS, Cofins, ICMS e ISS</b> (incidem sobre a receita do mês); <b>trimestrais — IRPJ e CSLL</b> (incidem sobre o lucro presumido do trimestre). Regra de bolso: faturamento = mês; lucro = trimestre.'
+},
+{
+  id:26, tema:"Lucro Presumido × outros regimes", aula:"quando compensa", unidade:"Slide 25",
+  stem:'Segundo o slide, o Lucro Presumido pode ser uma boa opção quando a empresa:',
+  alts:[
+    {t:"estiver dando prejuízo, porque assim recolhe menos imposto sobre o lucro do que no Lucro Real.", w:"Com prejuízo, o Presumido cobra IRPJ e CSLL sobre um lucro que não existe. É o cenário em que ele menos compensa."},
+    {t:"tiver lucro contábil acima do lucro presumido.", w:""},
+    {t:"for obrigada por lei a adotar o Lucro Real.", w:"O slide diz o contrário: quando NÃO for obrigada ao Lucro Real."},
+    {t:"faturar acima de R$ 78 milhões por ano.", w:"Acima de R$ 78 milhões ela é obrigada ao Lucro Real."},
+    {t:"quiser pagar todos os tributos numa única guia mensal.", w:"Guia única é o Simples. No Presumido cada tributo tem a sua guia."}
+  ],
+  correta:1,
+  why:'Slide 25 — compensa quando a empresa: (a) for <b>altamente rentável</b>; (b) tiver <b>lucro contábil superior ao lucro presumido</b>; (c) <b>não for obrigada</b> ao Lucro Real; (d) o Simples <b>não for interessante</b>, mesmo se enquadrando. Lógica: se o lucro real é maior que o presumido, pagar sobre o presumido sai mais barato.'
+},
+{
+  id:27, tema:"Cálculo do Lucro Presumido", aula:"PIS e Cofins", unidade:"Slide 23",
+  stem:'Uma empresa de comércio no Lucro Presumido faturou <b>R$ 150.000,00 em abril</b>. O PIS e a Cofins a pagar referentes a esse mês são:',
+  alts:[
+    {t:"PIS R$ 975,00 e Cofins R$ 4.500,00.", w:""},
+    {t:"PIS R$ 9.750,00 e Cofins R$ 45.000,00.", w:"Errou a vírgula: 0,65% = 0,0065, não 0,065."},
+    {t:"PIS R$ 4.500,00 e Cofins R$ 975,00.", w:"Trocou as alíquotas: 0,65% é o PIS, 3% é a Cofins."},
+    {t:"PIS R$ 78,00 e Cofins R$ 360,00.", w:"Aplicou sobre o lucro presumido (8%). PIS e Cofins incidem sobre o faturamento inteiro."},
+    {t:"Nada em abril, porque PIS e Cofins só são apurados no fim do trimestre.", w:"PIS e Cofins são mensais."}
+  ],
+  correta:0,
+  why:'Slide 23: PIS e Cofins = <b>alíquota × faturamento do mês</b>. PIS = 150.000 × <b>0,65%</b> = <b>R$ 975</b>. Cofins = 150.000 × <b>3%</b> = <b>R$ 4.500</b>. Um DARF para cada.'
+},
+{
+  id:28, tema:"Cálculo do Lucro Presumido", aula:"IRPJ", unidade:"Slides 21 e 24",
+  stem:'Uma empresa de comércio no Lucro Presumido teve <b>receita bruta de R$ 400.000,00 no trimestre</b>. Seguindo o exemplo dos slides, a base de cálculo e o IRPJ a pagar são:',
+  alts:[
+    {t:"Base R$ 48.000,00; IRPJ R$ 7.200,00.", w:"Usou 12%, que é a presunção da CSLL. Para o IRPJ no comércio são 8%."},
+    {t:"Base R$ 400.000,00; IRPJ R$ 60.000,00.", w:"Aplicou os 15% sobre a receita inteira. Primeiro se presume o lucro."},
+    {t:"Base R$ 32.000,00; IRPJ R$ 2.880,00.", w:"A base está certa, mas 9% é a alíquota da CSLL. A do IRPJ é 15%."},
+    {t:"Base R$ 32.000,00; IRPJ R$ 4.800,00.", w:""},
+    {t:"Base R$ 128.000,00; IRPJ R$ 19.200,00.", w:"Usou 32%, que é a presunção de serviços. Comércio é 8%."}
+  ],
+  correta:3,
+  why:'Slides 21 e 24 — comércio: <b>presunção IRPJ 8%</b>, <b>alíquota 15%</b>. Base = 400.000 × 8% = <b>R$ 32.000</b>. IRPJ = 32.000 × 15% = <b>R$ 4.800</b>. Como a base não passa de R$ 60 mil no trimestre, não há o adicional de 10%.'
+},
+{
+  id:29, tema:"Cálculo do Lucro Presumido", aula:"CSLL", unidade:"Slides 22 e 24",
+  stem:'A mesma empresa de comércio, com <b>R$ 400.000,00 de receita bruta no trimestre</b>, vai apurar a CSLL. A base de cálculo e a CSLL a pagar são:',
+  alts:[
+    {t:"Base R$ 32.000,00; CSLL R$ 2.880,00.", w:"Usou 8%, que é a presunção do IRPJ. Para a CSLL no comércio são 12%."},
+    {t:"Base R$ 48.000,00; CSLL R$ 7.200,00.", w:"A base está certa, mas aplicou 15% (alíquota do IRPJ). A da CSLL é 9%."},
+    {t:"Base R$ 48.000,00; CSLL R$ 4.320,00.", w:""},
+    {t:"Base R$ 128.000,00; CSLL R$ 11.520,00.", w:"32% é a presunção de serviços em geral. Comércio é 12%."},
+    {t:"Base R$ 400.000,00; CSLL R$ 36.000,00.", w:"Aplicou os 9% sobre a receita inteira, sem presumir o lucro."}
+  ],
+  correta:2,
+  why:'Slides 22 e 24 — comércio: <b>presunção CSLL 12%</b>, <b>alíquota 9%</b>. Base = 400.000 × 12% = <b>R$ 48.000</b>. CSLL = 48.000 × 9% = <b>R$ 4.320</b>. Compare com o exemplo do slide: R$ 280.000 × 12% = R$ 33.600 → × 9% = R$ 3.024.'
+},
+{
+  id:30, tema:"Cálculo do Lucro Presumido", aula:"percentuais de presunção", unidade:"Slides 21–22",
+  stem:'Um <b>escritório de contabilidade</b> (atividade regulamentada) está no Lucro Presumido. Os percentuais de presunção de lucro sobre a receita, para o IRPJ e para a CSLL, são:',
+  alts:[
+    {t:"IRPJ 8% e CSLL 12%.", w:"Esses são os percentuais de comércio e indústria."},
+    {t:"IRPJ 16% e CSLL 12%.", w:"16% é para transporte (exceto cargas) e serviços gerais até R$ 120 mil/ano."},
+    {t:"IRPJ 1,6% e CSLL 12%.", w:"1,6% é só para revenda de combustíveis e gás natural."},
+    {t:"IRPJ 32% e CSLL 12%.", w:"O IRPJ está certo, mas prestação de serviços em geral também é 32% na CSLL."},
+    {t:"IRPJ 32% e CSLL 32%.", w:""}
+  ],
+  correta:4,
+  why:'Slide 21 (IRPJ): <b>atividades regulamentadas</b> — médicos, dentistas, advogados, <b>contadores</b>, auditores, engenheiros — = <b>32%</b>. Slide 22 (CSLL): <b>prestação de serviços em geral</b> = <b>32%</b>. Comércio, indústria, hospital e transporte ficam em 12% na CSLL.'
+}
+];
+
+/* Uma linha por questão: o que levar na cabeça no dia da prova. */
+const LEMBRETES = {
+  1:"MEI = até R$ 81 mil · 1 empregado · taxa fixa e guia única · TEM CNPJ.",
+  2:"MEI 81 mil · ME 360 mil · EPP 360 mil a 4,8 mi. MEI não escolhe regime.",
+  3:"Empresário Individual não atende profissão liberal (médico, dentista, engenheiro).",
+  4:"SLU substituiu a EIRELI e acabou com o capital mínimo de 100 salários mínimos.",
+  5:"ME × MEI: faturamento, empregados e formalização. EPP × ME: faturamento e empregados.",
+  6:"EPP: comércio/serviços 10 a 49 empregados; indústria/construção 20 a 99. ME: 9 a 19.",
+  7:"Vantagens da EPP: Simples, incentivo fiscal pontual, licitação, crédito (Caixa/Sebrae/BNDES), menos burocracia.",
+  8:"Licitação EXCLUSIVA para pequenos negócios nas compras até R$ 80 mil.",
+  9:"Bens divisíveis: cota de até 25% para MPE.",
+  10:"Regularidade fiscal só no ato da contratação, com prazo extra. Empate = preferência da MPE.",
+  11:"Fiscalização orientadora, dupla visita. Multa sem isso pode ser anulada (LC 123/2006).",
+  12:"Aspectos: trabalhista, metrológico, sanitário, ambiental, segurança, uso do solo. Tributário NÃO.",
+  13:"Simples = DAS (guia única). Presumido = DARF (uma por tributo).",
+  14:"8 do Simples: IRPJ, CSLL, PIS, Cofins, IPI, ICMS, ISS, CPP.",
+  15:"Simples proíbe: S/A, sócio no exterior, empresa como sócia, débito em aberto, ser sócia de outra.",
+  16:"Sócio com outras empresas: a SOMA do faturamento não pode passar de R$ 4,8 mi.",
+  17:"MEI: CPP 5% do salário mínimo · ICMS R$ 1 (estado) · ISS R$ 5 (prefeitura).",
+  18:"Simples: criado em 2006; base = RECEITA BRUTA anual; até R$ 4,8 mi.",
+  19:"Anexo I comércio: até 180 mil 4% · até 360 mil 7,3% (desconta 5.940) · até 720 mil 9,5%.",
+  20:"I comércio · II indústria · III manutenção · IV limpeza/vigilância/obras/advocacia · V publicidade/TI/engenharia.",
+  21:"Anexo II indústria: 4,5% · 7,8% · 10% (360 a 720 mil, desconta 13.860).",
+  22:"Primeira faixa mais alta = Anexo V, 15,5%. Simples varia de 4% a 33%.",
+  23:"Simples até 4,8 mi · Presumido até 78 mi · Real acima de 78 mi.",
+  24:"Presumido: guias separadas E lucro presumido. Dois diferenciais, não causa e efeito.",
+  25:"Presumido: mensal = PIS, Cofins, ICMS, ISS. Trimestral = IRPJ, CSLL.",
+  26:"Presumido compensa com lucro alto: lucro real > lucro presumido.",
+  27:"PIS 0,65% e Cofins 3% sobre o faturamento do MÊS.",
+  28:"IRPJ comércio: receita × 8% × 15%. Adicional de 10% no que passar de R$ 60 mil de base.",
+  29:"CSLL comércio: receita × 12% × 9%.",
+  30:"Presunção 32% (IRPJ e CSLL) para serviços regulamentados: médico, dentista, advogado, contador."
+};
+
+
+/* Piadinhas. O comentário técnico continua sério — a graça fica no cabeçalho. */
+const ZOA_OK = [
+  "Isso! O Sebrae aprova.",
+  "Acertou na mosca.",
+  "Correto. Pode confiar em você.",
+  "Essa você já tem no bolso.",
+  "Exato. Tá ficando perigoso.",
+  "Certíssimo. A banca chorou.",
+  "Boa. Anota essa confiança.",
+  "Perfeito. Segue o baile.",
+  "Acertou. A Receita Federal ficou com medo.",
+  "Mandou bem. Próxima!"
+];
+const ZOA_NO = [
+  "Ops. Melhor errar aqui do que na prova.",
+  "Quase. Lê o comentário com calma.",
+  "Essa pegou. Respira e segue.",
+  "Errou bonito — mas errou. Bora entender.",
+  "Calma que o professor não viu.",
+  "Caiu na pegadinha. Todo mundo cai.",
+  "Não foi dessa vez. Guarda essa.",
+  "Doeu? Ótimo. Agora você não esquece.",
+  "Errar no simulado é de graça. Aproveita.",
+  "Tropeçou. Levanta que tem mais."
+];
+const MARCOS = {
+  3:"🔥 Três seguidas.",
+  5:"🔥 Cinco na sequência. Tá voando.",
+  7:"😎 Sete seguidas. Isso já é contador.",
+  10:"🏆 Dez seguidas. Saiu do MEI e virou EPP.",
+  15:"🚀 Quinze seguidas. Vai dar a aula no lugar do professor?"
+};
+
+const TOTAL = BANCO.length;
+const LETRAS = ["A","B","C","D","E"];
+const TEMAS = ["Enquadramento MEI, ME e EPP","Vantagens e tratamento diferenciado","Simples Nacional","Anexos do Simples","Lucro Presumido × outros regimes","Cálculo do Lucro Presumido"];
+const KEY = "simulado-pme-v1";
+
+/* ---------- estado ---------- */
+let S = null;
+
+function novoEstado(pool, shuffle, instant){
+  const lista = shuffle ? embaralha(pool.slice()) : pool.slice();
+  return {
+    ordem: lista.map(q => ({
+      id: q.id,
+      map: shuffle ? embaralha(q.alts.map((_,i)=>i)) : q.alts.map((_,i)=>i)
+    })),
+    i: 0,
+    respostas: {},   // id -> índice canônico escolhido
+    instant: instant,
+    shuffle: shuffle,
+    started: Date.now()
+  };
+}
+function embaralha(a){
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function byId(id){ return BANCO.find(q=>q.id===id); }
+
+/* ---------- persistência (tolerante a falha) ---------- */
+function salva(){
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
+}
+function carrega(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return null;
+    const v = JSON.parse(raw);
+    if(!v || !Array.isArray(v.ordem) || !v.ordem.length) return null;
+    return v;
+  }catch(e){ return null; }
+}
+function limpa(){ try{ localStorage.removeItem(KEY); }catch(e){} }
+
+/* ---------- elementos ---------- */
+const el = id => document.getElementById(id);
+const scIntro = el("screenIntro"), scQuiz = el("screenQuiz"), scDone = el("screenDone");
+
+/* ---------- tema ---------- */
+el("themeBtn").addEventListener("click", ()=>{
+  const cur = document.documentElement.getAttribute("data-theme");
+  let next;
+  if(cur === "dark") next = "light";
+  else if(cur === "light") next = "dark";
+  else next = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try{ localStorage.setItem(KEY+"-tema", next); }catch(e){}
+});
+try{
+  const t = localStorage.getItem(KEY+"-tema");
+  if(t) document.documentElement.setAttribute("data-theme", t);
+}catch(e){}
+
+/* ---------- abertura ---------- */
+function montaIntro(){
+  const salvo = carrega();
+  const respondidas = salvo ? Object.keys(salvo.respostas||{}).length : 0;
+  const box = el("resumeBox");
+  if(salvo && respondidas > 0 && respondidas < salvo.ordem.length){
+    box.hidden = false;
+    el("resumeTxt").innerHTML = "Você parou na questão <b>"+(salvo.i+1)+"</b> de "+salvo.ordem.length+".";
+  } else {
+    box.hidden = true;
+  }
+}
+el("resumeBtn").addEventListener("click", ()=>{
+  S = carrega();
+  if(S){ mostra("quiz"); render(); }
+});
+el("startBtn").addEventListener("click", ()=>{
+  S = novoEstado(BANCO, el("optShuffle").checked, el("optInstant").checked);
+  salva(); mostra("quiz"); render();
+});
+
+/* ---------- navegação de telas ---------- */
+function mostra(qual){
+  scIntro.hidden = qual !== "intro";
+  scQuiz.hidden  = qual !== "quiz";
+  scDone.hidden  = qual !== "done";
+  el("counter").hidden = qual !== "quiz";
+  window.scrollTo({top:0, behavior: qual==="intro" ? "auto" : "instant"});
+  if(qual === "intro"){ el("rail").style.width = "0%"; el("subtitle").textContent = "MEI, ME, EPP e regimes"; montaIntro(); }
+  if(qual === "done"){ el("rail").style.width = "100%"; el("subtitle").textContent = "Gabarito comentado"; }
+}
+
+/* ---------- render da questão ---------- */
+function render(){
+  const passo = S.ordem[S.i];
+  const q = byId(passo.id);
+  const n = S.ordem.length;
+
+  el("subtitle").textContent = q.unidade + " · " + q.aula;
+  el("counter").textContent = (S.i+1) + " / " + n;
+  el("rail").style.width = ((S.i) / n * 100) + "%";
+  el("qNum").textContent = String(S.i+1).padStart(2,"0");
+  el("qMeta").textContent = q.tema;
+
+  el("qStem").innerHTML = q.stem;
+
+  const itemsBox = el("qItems");
+  if(q.items){
+    itemsBox.hidden = false;
+    itemsBox.innerHTML = q.items.map(it => '<div><b>'+it[0]+'</b><span>'+it[1]+'</span></div>').join("");
+  } else {
+    itemsBox.hidden = true;
+    itemsBox.innerHTML = "";
+  }
+
+  const tailBox = el("qTail");
+  if(q.tail){ tailBox.hidden = false; tailBox.innerHTML = q.tail; }
+  else { tailBox.hidden = true; tailBox.innerHTML = ""; }
+
+  const escolhida = S.respostas[q.id];
+  const jaRespondeu = escolhida !== undefined;
+
+  const box = el("qAlts");
+  box.innerHTML = "";
+  passo.map.forEach((canon, pos) => {
+    const a = q.alts[canon];
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "alt";
+    b.innerHTML = '<span class="key">'+LETRAS[pos]+'</span><span class="body">'+a.t+'</span>';
+    if(jaRespondeu && S.instant){
+      b.disabled = true;
+      if(canon === q.correta) b.classList.add(canon === escolhida ? "picked-ok" : "reveal-ok");
+      else if(canon === escolhida) b.classList.add("picked-no");
+      else b.classList.add("dim");
+    } else if(jaRespondeu && !S.instant){
+      if(canon === escolhida) b.classList.add("picked-ok");
+    }
+    b.addEventListener("click", ()=> responde(q, canon));
+    box.appendChild(b);
+  });
+
+  el("qVerdict").innerHTML = (jaRespondeu && S.instant) ? veredito(q, escolhida) : "";
+  el("backBtn").disabled = S.i === 0;
+  const nb = el("nextBtn");
+  nb.disabled = !jaRespondeu && S.instant;
+  nb.textContent = (S.i === n-1) ? "Ver resultado" : "Próxima";
+}
+
+function sequenciaAte(i){
+  let n = 0;
+  for(let k=i; k>=0; k--){
+    const p = S.ordem[k], q = byId(p.id);
+    if(S.respostas[q.id] === q.correta) n++; else break;
+  }
+  return n;
+}
+
+function veredito(q, escolhida){
+  const acertou = escolhida === q.correta;
+  const letraCerta = LETRAS[S.ordem[S.i].map.indexOf(q.correta)];
+  const letraSua = LETRAS[S.ordem[S.i].map.indexOf(escolhida)];
+  const zoa = acertou ? ZOA_OK[q.id % ZOA_OK.length] : ZOA_NO[q.id % ZOA_NO.length];
+  let h = '<div class="verdict '+(acertou?"good":"bad")+'">';
+  h += '<div class="top">'+(acertou ? "✓ &nbsp;"+zoa : "✕ &nbsp;"+zoa+" &nbsp;· &nbsp;a correta é a "+letraCerta)+'</div>';
+  const seq = acertou ? sequenciaAte(S.i) : 0;
+  if(MARCOS[seq]) h += '<div class="streak">'+MARCOS[seq]+'</div>';
+  h += '<div class="sheet">';
+  h += '<div class="block"><div class="lbl hit">Por que a '+letraCerta+' está certa</div><p>'+q.why+'</p></div>';
+  if(!acertou && q.alts[escolhida].w){
+    h += '<div class="block"><div class="lbl miss">Onde a '+letraSua+' tropeça</div><p class="quiet">'+q.alts[escolhida].w+'</p></div>';
+  }
+  h += '</div></div>';
+  return h;
+}
+
+function responde(q, canon){
+  if(S.respostas[q.id] !== undefined && S.instant) return;
+  S.respostas[q.id] = canon;
+  salva();
+  render();
+  if(!S.instant){
+    // no modo prova, avança sozinho
+    setTimeout(()=>{ if(S.i < S.ordem.length-1){ S.i++; salva(); render(); } else { finaliza(); } }, 140);
+  } else {
+    setTimeout(()=>{
+      const v = document.querySelector(".verdict");
+      if(!v) return;
+      const nav = el("qNav").getBoundingClientRect().height || 0;
+      const r = v.getBoundingClientRect();
+      const folga = window.innerHeight - nav - 16;
+      if(r.bottom > folga || r.top < 60){
+        const alvo = window.scrollY + r.top - 66;
+        window.scrollTo({top: Math.max(0, alvo), behavior:"smooth"});
+      }
+    }, 70);
+  }
+}
+
+el("nextBtn").addEventListener("click", ()=>{
+  if(S.i < S.ordem.length-1){ S.i++; salva(); render(); }
+  else finaliza();
+});
+el("backBtn").addEventListener("click", ()=>{
+  if(S.i > 0){ S.i--; salva(); render(); }
+});
+
+/* ---------- resultado ---------- */
+function finaliza(){
+  const n = S.ordem.length;
+  let acertos = 0;
+  const porTema = {};
+  S.ordem.forEach(p=>{
+    const q = byId(p.id);
+    const r = S.respostas[q.id];
+    const ok = r === q.correta;
+    if(ok) acertos++;
+    if(!porTema[q.tema]) porTema[q.tema] = {ok:0, tot:0};
+    porTema[q.tema].tot++;
+    if(ok) porTema[q.tema].ok++;
+  });
+
+  el("scoreBig").textContent = acertos;
+  el("scoreBig").nextElementSibling.textContent = "de " + n + (n===1?" questão":" questões");
+  const pct = Math.round(acertos/n*100);
+  const pctEl = el("scorePct");
+  pctEl.textContent = pct + "%";
+  pctEl.className = "pct tnum " + (pct>=80?"hi":pct>=60?"mid":"lo");
+
+  const nota = (acertos/n*20).toFixed(1).replace(".",",");
+  let titulo, frase;
+  if(pct===100){ titulo="Gabaritou. Sério."; frase="Nota cheia. Fecha o computador, come alguma coisa e vai dormir — você já ganhou."; }
+  else if(pct>=90){ titulo="O Sebrae quer te contratar"; frase="Está pronto. Usa o tempo que sobrou só pra reler os lembretes aqui embaixo."; }
+  else if(pct>=75){ titulo="Passou com folga"; frase="Base sólida. Ataca as barras vermelhas antes da prova e tá resolvido."; }
+  else if(pct>=55){ titulo="Tá no caminho"; frase="Dá pra subir bastante só relendo os temas fracos e refazendo as que errou."; }
+  else if(pct>=35){ titulo="Bora, ainda dá tempo"; frase="Lê o gabarito comentado inteiro com calma e refaz só as erradas. Rende mais que reler os slides."; }
+  else { titulo="Respira. Ainda dá tempo."; frase="Errar aqui é de graça. Lê os lembretes abaixo, depois o gabarito, e refaz. Melhora rápido."; }
+  el("scoreTitle").textContent = titulo;
+  el("scoreLine").innerHTML = frase;
+
+  /* ---- relatório: o que levar na cabeça ---- */
+  const erradas = S.ordem.filter(p => S.respostas[p.id] !== byId(p.id).correta).map(p => byId(p.id));
+  const caixa = el("levarBox");
+  if(erradas.length === 0){
+    caixa.innerHTML = '<div class="zerobug">Você não errou nenhuma. Não tem o que corrigir — então leva estas cinco, que são as que mais derrubam gente:</div>'
+      + '<div class="lvgroup"><div class="lvtema">As cinco clássicas</div><ul class="lvlist">'
+      + [16,21,29,30,13].map(id=>'<li>'+LEMBRETES[id]+'</li>').join("")
+      + '</ul></div>';
+  } else {
+    const porTemaErro = {};
+    erradas.forEach(q=>{ (porTemaErro[q.tema] = porTemaErro[q.tema] || []).push(q); });
+    caixa.innerHTML = '<div class="lvintro">Você errou <b>'+erradas.length+'</b> '+(erradas.length===1?"questão":"questões")
+      + '. Se for decorar uma coisa só antes de entrar na sala, que seja isto:</div>'
+      + TEMAS.filter(t=>porTemaErro[t]).map(t=>
+          '<div class="lvgroup"><div class="lvtema">'+t+' <span>'+porTemaErro[t].length+'</span></div><ul class="lvlist">'
+          + porTemaErro[t].map(q=>'<li>'+LEMBRETES[q.id]+'</li>').join("")
+          + '</ul></div>'
+        ).join("");
+  }
+  el("copyBtn").hidden = erradas.length === 0;
+  el("copyBtn").textContent = "Copiar lembretes";
+  window.__lembretesTexto = (erradas.length ? erradas : [16,21,29,30,13].map(byId))
+    .map(q => "• " + LEMBRETES[q.id]).join("\n");
+
+  const tl = el("topicList");
+  tl.innerHTML = TEMAS.filter(t=>porTema[t]).map(t=>{
+    const d = porTema[t];
+    const p = Math.round(d.ok/d.tot*100);
+    const cls = p===100 ? "full" : p<60 ? "weak" : "";
+    return '<div class="tprow"><span class="nm">'+t+'</span><span class="sc">'+d.ok+'/'+d.tot+'</span>'
+         + '<span class="bar"><i class="'+cls+'" style="width:'+p+'%"></i></span></div>';
+  }).join("");
+
+  const rl = el("recapList");
+  rl.innerHTML = S.ordem.map((p, idx)=>{
+    const q = byId(p.id);
+    const r = S.respostas[q.id];
+    const ok = r === q.correta;
+    const respondida = r !== undefined;
+    const letraCerta = LETRAS[p.map.indexOf(q.correta)];
+    const letraSua = respondida ? LETRAS[p.map.indexOf(r)] : "—";
+    const resumo = q.stem.replace(/<[^>]+>/g,"").slice(0,110) + (q.stem.replace(/<[^>]+>/g,"").length>110 ? "…" : "");
+    let inner = '';
+    if(respondida && !ok){
+      inner += '<div class="ans"><span class="kk no">'+letraSua+'</span>'+q.alts[r].t+'</div>';
+    }
+    inner += '<div class="ans"><span class="kk ok">'+letraCerta+'</span>'+q.alts[q.correta].t+'</div>';
+    inner += '<div class="why">'+q.why+'</div>';
+    if(respondida && !ok && q.alts[r].w){
+      inner += '<div class="why" style="border-top:none;padding-top:6px;margin-top:6px"><b>Onde a '+letraSua+' tropeça:</b> '+q.alts[r].w+'</div>';
+    }
+    return '<details class="rq"'+(ok?"":" open")+'>'
+      + '<summary><span class="flag '+(!respondida?"skip":ok?"ok":"no")+'">'+(!respondida?"–":ok?"✓":"✕")+'</span>'
+      + '<span class="sum"><span class="t">'+(idx+1)+'. '+resumo+'</span><span class="m">'+q.tema+' · '+q.aula+'</span></span></summary>'
+      + '<div class="inner">'+inner+'</div></details>';
+  }).join("");
+
+  const errou = S.ordem.filter(p => S.respostas[p.id] !== byId(p.id).correta);
+  el("redoWrongBtn").disabled = errou.length === 0;
+  el("redoWrongBtn").textContent = errou.length === 0 ? "Zerou os erros 🎉" : "Refazer as "+errou.length+" que errei";
+
+  mostra("done");
+}
+
+el("copyBtn").addEventListener("click", async ()=>{
+  const btn = el("copyBtn");
+  const txt = window.__lembretesTexto || "";
+  let ok = false;
+  try{ await navigator.clipboard.writeText(txt); ok = true; }
+  catch(e){
+    try{
+      const ta = document.createElement("textarea");
+      ta.value = txt; ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.select();
+      ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+    }catch(e2){ ok = false; }
+  }
+  btn.textContent = ok ? "Copiado ✓" : "Não deu — selecione e copie";
+  setTimeout(()=>{ btn.textContent = "Copiar lembretes"; }, 2600);
+});
+
+el("redoAllBtn").addEventListener("click", ()=>{
+  limpa();
+  S = novoEstado(BANCO, S ? S.shuffle : true, S ? S.instant : true);
+  salva(); mostra("quiz"); render();
+});
+el("redoWrongBtn").addEventListener("click", ()=>{
+  const ids = S.ordem.filter(p => S.respostas[p.id] !== byId(p.id).correta).map(p=>p.id);
+  if(!ids.length) return;
+  const pool = BANCO.filter(q => ids.includes(q.id));
+  limpa();
+  S = novoEstado(pool, S.shuffle, S.instant);
+  salva(); mostra("quiz"); render();
+});
+
+/* ---------- atalhos de teclado ---------- */
+document.addEventListener("keydown", e=>{
+  if(scQuiz.hidden) return;
+  const k = e.key.toUpperCase();
+  const idx = LETRAS.indexOf(k);
+  if(idx >= 0){
+    const btns = el("qAlts").querySelectorAll(".alt");
+    if(btns[idx] && !btns[idx].disabled) btns[idx].click();
+  }
+  if(e.key === "Enter" && !el("nextBtn").disabled) el("nextBtn").click();
+  if(e.key === "ArrowLeft" && !el("backBtn").disabled) el("backBtn").click();
+});
+
+/* ---------- continuidade entre publicações ---------- */
+function boot(data){
+  if(data && data.S){ S = data.S; }
+  if(S && S.ordem && Object.keys(S.respostas||{}).length < S.ordem.length && S.i !== undefined && Object.keys(S.respostas||{}).length > 0){
+    mostra("quiz"); render();
+  } else {
+    mostra("intro");
+  }
+}
+if(window.claude && window.claude.hot){
+  window.claude.hot.snapshot(()=>({S}));
+  window.claude.hot.ready ? window.claude.hot.ready(boot) : boot(window.claude.hot.data || {});
+} else {
+  boot({});
+}
+</script>
